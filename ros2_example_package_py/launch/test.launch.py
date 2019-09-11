@@ -1,19 +1,18 @@
 import launch
-from launch import LaunchDescription
-from launch import LaunchService
+import launch_ros.actions
 
-def main(argv=sys.argv[1:]):
-    ld = LaunchDescription([
-        launch_ros.actions.Node(
-            package="ros2_example_py", node_executable="ros2_subscriber", output="screen",
-            parameters=["config/config.yaml"]),
-        launch_ros.actions.Node(
-            package="ros2_example_cpp", node_executable="ros2_publisher", output="screen")
-
-    ])
-    ls = LaunchService(argv=argv)
-    ls.include_launch_description(ld)
-    return ls.run()
-
-if __name__ == "__main__":
-    sys.exit(main())
+def generate_launch_description():
+    sub_node = launch_ros.actions.Node(
+        package='ros2_example_package_py',
+        node_executable='ros2_subscriber',
+        output='screen',
+        remappings=[('ros2_check_string', 'ros2_check_string_remapped')])
+    pub_node = launch_ros.actions.Node(
+        package='ros2_example_package_cpp',
+        node_executable='ros2_publisher',
+        output='screen',
+        remappings=[('ros2_check_string', 'ros2_check_string_remapped')])
+    ld = launch.LaunchDescription()
+    ld.add_action(sub_node)
+    ld.add_action(pub_node)
+    return ld
